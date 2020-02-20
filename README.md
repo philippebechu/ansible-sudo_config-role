@@ -22,14 +22,15 @@ Dependencies
 
 Example Playbook
 ----------------
-
+```yaml
   vars:
     sudo_files:
       - default
       - externes
-
   roles:
     - role: sudo_config
+```
+
 
 License
 -------
