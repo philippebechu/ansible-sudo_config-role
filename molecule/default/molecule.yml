@@ -1,0 +1,28 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: instance
+    image: centos:7
+    privileged: true
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+    log: true
+  inventory:
+    group_vars:
+      all:
+        sudo_files:
+          - sigma
+          - sigma2
+scenario:
+  name: default  
+verifier:
+  name: goss
+  lint:
+    name: yamllint

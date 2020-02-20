@@ -1,0 +1,17 @@
+---
+user:
+  sigma:
+    exists: true
+    group: 
+      - sigma
+    
+group:
+  sigma:
+    exists: true
+
+file:
+  /etc/sudoers.d/sigma:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root

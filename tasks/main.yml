@@ -1,0 +1,13 @@
+---
+- name: Ensure directory exists
+  file:
+    path: "/etc/sudoers.stage.d"
+    owner: root
+    group: root
+    mode: "0750"
+    state: directory
+
+- include_tasks: deploy_file.yml
+  loop: "{{ sudo_files }}"
+  loop_control:
+    loop_var: sudo_file_item

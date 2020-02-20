@@ -1,0 +1,78 @@
+---
+# tasks file for sudo_config
+- name: debug
+  debug:
+    msg: "group : {{ sudo_file_item }}"
+
+- name: Copy file
+  copy:
+    src: "sudoers/{{ sudo_file_item }}"
+    dest: "/etc/sudoers.stage.d/"
+    backup: no
+    owner: root
+    group: root
+    mode: "0440"
+    validate: /usr/sbin/visudo -csf %s
+  register: sudoers_d
+
+- name: Test and activate sudoers files
+  block:
+    - name: Backup current directory
+      copy:
+        src: "/etc/sudoers.d/"
+        dest: "/etc/sudoers.d.bck"
+        owner: root
+        group: root
+        mode: "preserve"
+        remote_src: true
+
+    - name: Move new files
+      copy:
+        src: "/etc/sudoers.stage.d/{{ sudo_file_item }}"
+        dest: "/etc/sudoers.d/"
+        owner: root
+        group: root
+        mode: "0440"
+        remote_src: true
+    
+    - name: Validate config
+      command: /usr/sbin/visudo -c    
+
+  rescue:
+    - name: Remove corrupt config
+      file:
+        path: /etc/sudoers.d
+        state: absent
+
+    - name: Restore backup
+      copy:
+        src: /etc/sudoers.d.bck/
+        dest: /etc/sudoers.d
+        remote_src: true
+
+    - name: Get files list
+      find: 
+        paths: /etc/sudoers.d
+      register: file_list
+
+    - name: Set file permissions
+      file:
+        path: "{{ item.path }}"
+        owner: root
+        group: root
+        mode: "0440"
+      with_items: "{{ file_list.files }}"
+        
+    - name: Remove corrupt file
+      file:
+        path: "/etc/sudoers.stage.d/{{ sudo_file_item }}"
+        state: absent
+
+  always:
+    - name: Remove useless directory
+      file:
+        path: "/etc/sudoers.d.bck"
+        state: absent
+
+  when: sudoers_d.changed
+
