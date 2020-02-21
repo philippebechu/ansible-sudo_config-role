@@ -6,8 +6,8 @@
 
 - name: Copy file
   copy:
-    src: "sudoers/{{ sudo_file_item }}"
-    dest: "/etc/sudoers.stage.d/"
+    src: "{{ sudoers_files_path }}/{{ sudo_file_item }}"
+    dest: "{{ staging_dir }}"
     backup: no
     owner: root
     group: root
@@ -19,8 +19,8 @@
   block:
     - name: Backup current directory
       copy:
-        src: "/etc/sudoers.d/"
-        dest: "/etc/sudoers.d.bck"
+        src: "{{ sudoers_path }}"
+        dest: "{{ sudoers_bck_path }}"
         owner: root
         group: root
         mode: "preserve"
@@ -28,8 +28,8 @@
 
     - name: Move new files
       copy:
-        src: "/etc/sudoers.stage.d/{{ sudo_file_item }}"
-        dest: "/etc/sudoers.d/"
+        src: "{{ staging_dir }}/{{ sudo_file_item }}"
+        dest: "{{ sudoers_path }}"
         owner: root
         group: root
         mode: "0440"
@@ -41,18 +41,18 @@
   rescue:
     - name: Remove corrupt config
       file:
-        path: /etc/sudoers.d
+        path: {{ sudoers_path }}
         state: absent
 
     - name: Restore backup
       copy:
-        src: /etc/sudoers.d.bck/
-        dest: /etc/sudoers.d
+        src: "{{ sudoers_bck_path }}"
+        dest: "{{ sudoers_path }}"
         remote_src: true
 
     - name: Get files list
       find: 
-        paths: /etc/sudoers.d
+        paths: "{{ sudoers_path }}"
       register: file_list
 
     - name: Set file permissions
@@ -65,13 +65,13 @@
         
     - name: Remove corrupt file
       file:
-        path: "/etc/sudoers.stage.d/{{ sudo_file_item }}"
+        path: "{{ staging_dir }}/{{ sudo_file_item }}"
         state: absent
 
   always:
     - name: Remove useless directory
       file:
-        path: "/etc/sudoers.d.bck"
+        path: "{{ sudoers_bck_path }}"
         state: absent
 
   when: sudoers_d.changed

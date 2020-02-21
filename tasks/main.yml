@@ -1,7 +1,7 @@
 ---
 - name: Ensure directory exists
   file:
-    path: "/etc/sudoers.stage.d"
+    path: "{{ staging_dir }}"
     owner: root
     group: root
     mode: "0750"
