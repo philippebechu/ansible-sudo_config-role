@@ -11,6 +11,8 @@ platforms:
     privileged: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_CALLBACK_PLUGINS: "/home/philippe/.local/lib/python3.6/site-packages/ara/plugins/callback"
   lint:
     name: ansible-lint
     log: true
