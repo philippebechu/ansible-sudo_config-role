@@ -75,4 +75,3 @@
         state: absent
 
   when: sudoers_d.changed
-

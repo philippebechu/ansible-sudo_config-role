@@ -2,5 +2,5 @@
 # defaults file for sudo_config
 staging_dir: "/etc/sudoers.stage.d"
 sudoers_files_path: "sudoers"
-sudoers_path: "/etc/sudoers.d/"
-sudoers_bck_path: "/etc/sudoers.d.bck/"
+sudoers_path: "/etc/sudoers.d"
+sudoers_bck_path: "/etc/sudoers.d.bck"
