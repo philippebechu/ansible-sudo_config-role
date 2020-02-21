@@ -41,7 +41,7 @@
   rescue:
     - name: Remove corrupt config
       file:
-        path: {{ sudoers_path }}
+        path: "{{ sudoers_path }}"
         state: absent
 
     - name: Restore backup
