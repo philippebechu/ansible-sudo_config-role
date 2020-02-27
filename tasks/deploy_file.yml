@@ -39,31 +39,12 @@
       command: /usr/sbin/visudo -c    
 
   rescue:
-    - name: Remove corrupt config
+    - name: Remove corrupt config from "{{ sudoers_path }}"
       file:
-        path: "{{ sudoers_path }}"
+        path: "{{ sudoers_path }}/{{ sudo_file_item }}"
         state: absent
 
-    - name: Restore backup
-      copy:
-        src: "{{ sudoers_bck_path }}"
-        dest: "{{ sudoers_path }}"
-        remote_src: true
-
-    - name: Get files list
-      find: 
-        paths: "{{ sudoers_path }}"
-      register: file_list
-
-    - name: Set file permissions
-      file:
-        path: "{{ item.path }}"
-        owner: root
-        group: root
-        mode: "0440"
-      with_items: "{{ file_list.files }}"
-        
-    - name: Remove corrupt file
+    - name: Remove corrupt file from "{{ staging_dir }}"
       file:
         path: "{{ staging_dir }}/{{ sudo_file_item }}"
         state: absent
