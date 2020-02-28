@@ -1,5 +1,29 @@
 ---
-- name: Ensure directory exists
+- name: Ensure directory "{{ sudoers_path }}" exists
+  file:
+    path: "{{ sudoers_path }}"
+    owner: root
+    group: root
+    mode: "0750"
+    state: directory
+
+- name: Get existing file
+  find:
+    path: "{{ sudoers_path }}"
+  register: sudoersfiles
+
+- name: Check existing files permissions
+  file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "0440"
+  with_items: "{{ sudoersfile.files }}"
+
+- name: Checking conf whith viduso
+  command: visudo -c
+
+- name: Ensure directory "{{ staging_dir }}" exists
   file:
     path: "{{ staging_dir }}"
     owner: root
